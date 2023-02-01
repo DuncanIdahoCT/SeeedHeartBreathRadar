@@ -21,14 +21,14 @@ constexpr uint8_t SeeedHeartBreathRadar::calcCrc( uint8_t current, uint8_t next 
   return 0xFF & (current + next);
 }
 
-constexpr uint8_t SeeedHeartBreathRadar::calcCrc( uint8_t current, const uint8_t *next, size_t nextLen ) {
-  while (nextLen > 0) {
-    current = calcCrc( current, *next );
-    next++;
-    nextLen--;
-  }
-  return current;
-}
+//constexpr uint8_t SeeedHeartBreathRadar::calcCrc( uint8_t current, const uint8_t *next, size_t nextLen ) {
+//  while (nextLen > 0) {
+//    current = calcCrc( current, *next );
+//    next++;
+//    nextLen--;
+//  }
+//  return current;
+//}
 
 bool SeeedHeartBreathRadar::recvRadarBytes() {
   while (m_serial->available() > 0) {
@@ -131,6 +131,12 @@ bool SeeedHeartBreathRadar::handlePersonInfoFrame() {
       Serial.print( m_angles.first );
       Serial.print( " x " );
       Serial.println( m_angles.second );
+    }
+    break;
+  case OD_GET_PRESENCE_INF:
+    m_presenceInf = (PresenceVal)m_frame.payloadbuf1[0];
+    if (m_debugLevel > 1) {
+      Serial.println( presenceValToString( m_presenceInf ) );
     }
     break;
   case OD_GET_MOVEMENT_STATE:
