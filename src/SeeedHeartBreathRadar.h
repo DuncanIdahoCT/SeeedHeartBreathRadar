@@ -162,9 +162,22 @@ Field Name      |    | bytes  | Description
     }
   }
 
+  enum PresenceVal : uint8_t {
+    PR_NONE       = 0x00, //None
+    PR_DETECTED   = 0x01  //A person is detected
+  };
+
+  static const char *presenceValToString( PresenceVal val ) {
+    switch ( val) {
+    case PR_NONE: return "none";
+    case PR_DETECTED: return "detected";
+    default: return "unknown";
+    }
+  }
+
   enum MovementVal : uint8_t {
-    MV_NONE       = 0x00,        //None
-    MV_STATIONARY = 0x01,  //A person is stationary
+    MV_NONE       = 0x00,   //None
+    MV_STATIONARY = 0x01,   //A person is stationary
     MV_MOVEMENT   = 0x02    //A person in motion
   };
 
@@ -269,23 +282,28 @@ Field Name      |    | bytes  | Description
 
   bool recvRadarBytes();
 
-  bool begin( HardwareSerial *serial ) {
+  #ifdef ESP32
+	#define RXD2 23
+	#define TXD2 5
+  #endif
+
+bool begin( HardwareSerial *serial ) {
     if (!serial) {
-      serial = &Serial1;
+      serial = &Serial;
     }
     m_serial = (Stream *)serial;
-    serial->begin( 115200 );
+    serial->begin( 115200, SERIAL_8N1, RXD2, TXD2 );
     return (bool)*serial;
   }
 
-  bool begin( SoftwareSerial *serial ) {
-    if (!serial) {
-      return false;
-    }
-    m_serial = (Stream *)serial;
-    serial->begin( 115200 );
-    return (bool)*serial;
-  }
+  // bool begin( SoftwareSerial *serial ) {
+  //   if (!serial) {
+  //     return false;
+  //   }
+  //   m_serial = (Stream *)serial;
+  //   serial->begin( 115200 );
+  //   return (bool)*serial;
+  // }
 
   unsigned getHeartRate() const {
     return m_hr;
@@ -309,6 +327,10 @@ Field Name      |    | bytes  | Description
 
   stdmissing::pair<unsigned, unsigned> getAngles() const {
     return { m_angles.first, m_angles.second };
+  }
+
+  PresenceVal getPresenceInf() const {
+    return m_presenceInf;
   }
 
   unsigned getMovementLevel() const {
@@ -364,6 +386,7 @@ protected:
   bool m_outOfRange = false;
   stdmissing::pair<unsigned, unsigned> m_angles;
 
+  PresenceVal m_presenceInf = PR_NONE;
   unsigned m_movementLevel = 0;
   MovementVal m_movementState = MV_NONE;
 
