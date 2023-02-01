@@ -359,3 +359,4 @@ bool SeeedHeartBreathRadar::requestOperatingStatus() {
   Frame frame = { { HEAD_0, HEAD_1 }, ControlTopic::CD_OPERATING_STATUS, OD_GET_OPERATING_STATUS, 1, { 0x0f } };
   return sendFrame( frame );
 }
+
