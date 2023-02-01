@@ -1,3 +1,22 @@
+# This Fork:
+
+Focuses on using an ESP32 MCU which requires some changes to the Serial configuration and also I've added, or finished adding the code necessary to interpret not only movement but also presence and added both to the debug (serial monitor) output log.
+
+I've tested this and it seems to work nicely using a Seeed Fall Detection module which is very similar other than some microcode to the work done here which is more specific to the Breathe / Heartrate module from Seeed.
+
+```
+Presence 0) Movement 0) HR (unknown) 0 RR (unknown) 0 at 0 angled 0 <-no one / no move
+Presence 1) Movement 2) HR (unknown) 0 RR (unknown) 0 at 0 angled 0 <-someone / moving
+Presence 1) Movement 1) HR (unknown) 0 RR (unknown) 0 at 0 angled 0 <-someone / still
+
+```
+
+# Plans for more:
+
+Originally I was just looking for cleaner code which is what I've found thanks to AronRubin :) but now I'm likely going to use this instead of the example code from Seeed I originally used-to make a new Home Assistant integration via MQTT.
+
+# Original ReadMe from AronRubin:
+
 # SeeedHeartBreathRadar
 ## An Arduino compatible library to communicate with Seeed Studio's 60GHz mmWave Human Vitals radar
 
