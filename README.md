@@ -15,9 +15,7 @@ Presence 1) Movement 1) HR (unknown) 0 RR (unknown) 0 at 0 angled 0 <-someone / 
 
 Originally I was just looking for cleaner code which is what I've found thanks to AronRubin :) but now I'm likely going to use this instead of the example code from Seeed I originally used-to make a new Home Assistant integration via MQTT.
 
-# Original ReadMe from AronRubin:
-
-# SeeedHeartBreathRadar
+# Original - SeeedHeartBreathRadar - ReadMe from AronRubin:
 ## An Arduino compatible library to communicate with Seeed Studio's 60GHz mmWave Human Vitals radar
 
 <div align=center><img width = 800 src="https://files.seeedstudio.com/wiki/60GHzradar/MR60BHA1.jpeg"/></div>
