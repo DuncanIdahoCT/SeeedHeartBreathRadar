@@ -1,5 +1,154 @@
 #include "SeeedHeartBreathRadar.h"
 
+
+
+
+#include <ArduinoJson.h>
+#include <ArduinoMqttClient.h>
+#include <WiFi.h>
+
+// WiFi parameters
+#define WLAN_SSID       "your_ssid"
+#define WLAN_PASS       "your_wifi_pass"
+
+// MQTT vars
+const char broker[] = "xxx.xxx.xxx.xxx";
+int        port     = 1883;
+const char statustopic[]  = "homeassistant/sensor/seeed-mmwave_status/state";
+const char presencetopic[]  = "homeassistant/binary_sensor/seeed-mmwave_presence/state";
+const char movementtopic[]  = "homeassistant/binary_sensor/seeed-mmwave_movement/state";
+
+WiFiClient wifiClient;
+MqttClient mqttClient(wifiClient);
+
+void SeeedHeartBreathRadar::Wifi() {
+  Serial.print(F("Connecting to "));
+  Serial.println(WLAN_SSID);
+  WiFi.begin(WLAN_SSID, WLAN_PASS);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(F("."));
+  }
+  Serial.println();
+  Serial.println(F("WiFi connected"));
+  Serial.println(F("IP address: "));
+  Serial.println(WiFi.localIP());
+}
+
+// Function to connect and reconnect as necessary to the MQTT server.
+// Should be called in the loop function and it will take care if connecting.
+void SeeedHeartBreathRadar::MQTT() {
+  if (mqttClient.connected()) {
+    return;
+  }
+  // You can provide a unique client ID, if not set the library uses Arduino-millis()
+  // Each client must have a unique client ID
+  mqttClient.setId("seeed-mmwave");
+
+  // You can provide a username and password for authentication
+  mqttClient.setUsernamePassword("mqtt_username", "mqtt_password_key");
+
+  Serial.print("Attempting to connect to the MQTT broker: ");
+  Serial.println(broker);
+  if (!mqttClient.connect(broker, port)) {
+    Serial.print("MQTT connection failed! Error code = ");
+    Serial.println(mqttClient.connectError());
+    while (1);
+  }
+  Serial.println("You're connected to the MQTT broker!");
+  Serial.println();
+  
+  // MQTT Discovery Test
+  
+  DynamicJsonDocument config(512);
+  config["name"] = "Status";
+  config["object_id"] = "seeed-mmwave_status";
+  config["unique_id"] = "your_unique_id_here... I used a GUID";
+  config["state_topic"] = "homeassistant/sensor/seeed-mmwave_status/state";
+  JsonObject device  = config.createNestedObject("device");
+  device["identifiers"] = "Custom";
+  device["name"] = "Seeed mmWave";
+  device["model"] = "CS101";
+  device["manufacturer"] = "Custom";
+  device["sw_version"] = "1.0";
+
+  serializeJsonPretty(config, Serial);
+
+  mqttClient.beginMessage("homeassistant/sensor/seeed-mmwave_status/config", (unsigned long)measureJson(config));
+  serializeJson(config, mqttClient);
+  mqttClient.endMessage();
+
+  DynamicJsonDocument config1(512);
+  config1["device_class"] = "Occupancy";
+  config1["name"] = "Presence";
+  config1["object_id"] = "seeed-mmwave_presence";
+  config1["unique_id"] = "your_unique_id_here... I used a GUID";
+  config1["state_topic"] = "homeassistant/binary_sensor/seeed-mmwave_presence/state";
+  config1["payload_on"] = "detected";
+  config1["payload_off"] = "none";
+  JsonObject device1  = config1.createNestedObject("device");
+  device1["identifiers"] = "Custom";
+  device1["name"] = "Seeed mmWave";
+  device1["model"] = "CS101";
+  device1["manufacturer"] = "Custom";
+  device1["sw_version"] = "1.0";
+
+  serializeJsonPretty(config1, Serial);
+
+  mqttClient.beginMessage("homeassistant/binary_sensor/seeed-mmwave_presence/config", (unsigned long)measureJson(config1));
+  serializeJson(config1, mqttClient);
+  mqttClient.endMessage();
+
+  DynamicJsonDocument config2(512);
+  config2["device_class"] = "motion";
+  config2["name"] = "Movement";
+  config2["object_id"] = "seeed-mmwave_movement";
+  config2["unique_id"] = "your_unique_id_here... I used a GUID";
+  config2["state_topic"] = "homeassistant/binary_sensor/seeed-mmwave_movement/state";
+  config2["payload_on"] = "movement";
+  config2["payload_off"] = "stationary";
+  JsonObject device2  = config2.createNestedObject("device");
+  device2["identifiers"] = "Custom";
+  device2["name"] = "Seeed mmWave";
+  device2["model"] = "CS101";
+  device2["manufacturer"] = "Custom";
+  device2["sw_version"] = "1.0";
+
+  serializeJsonPretty(config2, Serial);
+
+  mqttClient.beginMessage("homeassistant/binary_sensor/seeed-mmwave_movement/config", (unsigned long)measureJson(config2));
+  serializeJson(config2, mqttClient);
+  mqttClient.endMessage();
+
+  String status;
+  String presence;
+  String movement;
+
+  bool retained = true;
+  int qos = 1;
+  bool dup = false;
+
+  presence = "none";
+  mqttClient.beginMessage(presencetopic, presence.length(), retained, qos, dup);
+  mqttClient.print(presence);
+  mqttClient.endMessage();
+
+  movement = "stationary";
+  mqttClient.beginMessage(movementtopic, movement.length(), retained, qos, dup);
+  mqttClient.print(movement);
+  mqttClient.endMessage();
+
+  status = "Presence State is - none";
+  mqttClient.beginMessage(statustopic, status.length(), retained, qos, dup);
+  mqttClient.print(status);
+  mqttClient.endMessage();
+}
+
+
+
+
+
+
 SeeedHeartBreathRadar::~SeeedHeartBreathRadar() {
   if( m_extPayloadBuf ) {
     free( m_extPayloadBuf );
@@ -118,6 +267,21 @@ bool SeeedHeartBreathRadar::recvRadarBytes() {
 }
 
 bool SeeedHeartBreathRadar::handlePersonInfoFrame() {
+
+
+
+
+    String mqttstatus;
+    String mqttpresence;
+    String mqttmovement;
+
+    bool mqttretained = true;
+    int mqttqos = 1;
+    bool mqttdup = false;
+
+
+
+
   if (m_debugLevel > 1) {
     Serial.print( "Human detection " );
     Serial.print( personInfoOperationToString( (PersonInfoOperation)m_frame.op ) );
@@ -135,12 +299,44 @@ bool SeeedHeartBreathRadar::handlePersonInfoFrame() {
     break;
   case OD_GET_PRESENCE_INF:
     m_presenceInf = (PresenceVal)m_frame.payloadbuf1[0];
+
+
+
+    mqttpresence = (presenceValToString( m_presenceInf ));
+    mqttClient.beginMessage(presencetopic, mqttpresence.length(), mqttretained, mqttqos, mqttdup);
+    mqttClient.print(mqttpresence);
+    mqttClient.endMessage();
+
+    mqttstatus = ("Presence State is - ");
+    mqttstatus += (presenceValToString( m_presenceInf ));
+    mqttClient.beginMessage(statustopic, mqttstatus.length(), mqttretained, mqttqos, mqttdup);
+    mqttClient.print(mqttstatus);
+    mqttClient.endMessage();
+
+
+
     if (m_debugLevel > 1) {
       Serial.println( presenceValToString( m_presenceInf ) );
     }
     break;
   case OD_GET_MOVEMENT_STATE:
     m_movementState = (MovementVal)m_frame.payloadbuf1[0];
+
+
+
+    mqttmovement = (movementValToString( m_movementState ));
+    mqttClient.beginMessage(movementtopic, mqttmovement.length(), mqttretained, mqttqos, mqttdup);
+    mqttClient.print(mqttmovement);
+    mqttClient.endMessage();
+
+    mqttstatus = ("Motion State is - ");
+    mqttstatus += (movementValToString( m_movementState ));
+    mqttClient.beginMessage(statustopic, mqttstatus.length(), mqttretained, mqttqos, mqttdup);
+    mqttClient.print(mqttstatus);
+    mqttClient.endMessage();
+
+
+
     if (m_debugLevel > 1) {
       Serial.println( movementValToString( m_movementState ) );
     }
@@ -359,4 +555,3 @@ bool SeeedHeartBreathRadar::requestOperatingStatus() {
   Frame frame = { { HEAD_0, HEAD_1 }, ControlTopic::CD_OPERATING_STATUS, OD_GET_OPERATING_STATUS, 1, { 0x0f } };
   return sendFrame( frame );
 }
-
