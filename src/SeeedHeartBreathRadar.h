@@ -284,10 +284,11 @@ Field Name      |    | bytes  | Description
 
 
 
-
+  // Declared both new void functions
   void Wifi();
   void MQTT();
 
+  // Serial2 com port pins for (if) an ESP32
   #ifdef ESP32
 	#define RXD2 23
 	#define TXD2 5
@@ -298,6 +299,7 @@ bool begin( HardwareSerial *serial ) {
       serial = &Serial;
     }
     m_serial = (Stream *)serial;
+    // Added Serial2 com port details including pins as defined above
     serial->begin( 115200, SERIAL_8N1, RXD2, TXD2 );
     return (bool)*serial;
   }
