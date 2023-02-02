@@ -14,6 +14,17 @@ SeeedHeartBreathRadar radar;
 
 void setup() {
   Serial.begin(115200);
+
+
+
+
+  radar.Wifi();
+
+  radar.MQTT();
+
+
+
+
   radar.begin( &Serial2 );
   delay(1500);
   Serial.println("Readly");
@@ -22,14 +33,25 @@ void setup() {
 void loop() {
   auto tnow = millis();
 
+
+
+
+  radar.MQTT();
+
+
+
+
   radar.recvRadarBytes();
   
   if (tnow - lastPrintMs > 500) {
-    Serial.print( "  Presence " );
+    Serial.print( "  Presence (" );
     Serial.print( radar.getPresenceInf() );
     Serial.print( ") " );
-    Serial.print( "  Movement " );
+    Serial.print( "  Movement (" );
     Serial.print( radar.getMovementState() );
+    Serial.print( ") " );
+    Serial.print( "  Movement Level (" );
+    Serial.print( radar.getMovementLevel() );
     Serial.print( ") " );
     Serial.print( "  HR (" );
     Serial.print( SeeedHeartBreathRadar::vitalsStateValToString( (SeeedHeartBreathRadar::VitalsStateVal) radar.getHeartRateState() ) );
