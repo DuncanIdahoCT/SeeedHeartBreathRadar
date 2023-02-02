@@ -1,8 +1,7 @@
 # This Branch (seeed-mmwave-60ghz-homeassistant):
 
-Focuses on using an ESP32 MCU which requires some changes to the Serial configuration and also I've added, or finished adding the code necessary to interpret not only movement but also presence and added both to the debug (serial monitor) output log.
+Adds full Home Assistant device/sensor/binary_sensor functionality similar to another project where I used the Seeed Arduino example sketch and extended it to work as an MQTT Home Assistant integration.
 
-I've tested this and it seems to work nicely using a Seeed Fall Detection module which is very similar other than some microcode to the work done here which is more specific to the Breathe / Heartrate module from Seeed.
 ## This Fork:
 
 Focuses on using an ESP32 MCU which requires some changes to the Serial configuration and also I've added, or finished adding the code necessary to interpret not only movement but also presence and added both to the debug (serial monitor) output log.
