@@ -153,7 +153,7 @@ Field Name      |    | bytes  | Description
 
   static const char *personInfoOperationToString( PersonInfoOperation op ) {
     switch (op) {
-    case OD_GET_PRESENCE_INF: return "get presence Information";
+    case OD_GET_PRESENCE_INF: return "get presence information";
     case OD_GET_MOVEMENT_STATE: return "get movement state";
     case OD_GET_MOVEMENT_LEVEL: return "get movement level";
     case OD_GET_DISTANCE: return "get distance to person";
@@ -282,6 +282,12 @@ Field Name      |    | bytes  | Description
 
   bool recvRadarBytes();
 
+
+
+
+  void Wifi();
+  void MQTT();
+
   #ifdef ESP32
 	#define RXD2 23
 	#define TXD2 5
@@ -371,7 +377,7 @@ protected:
   static constexpr uint8_t calcCrc( uint8_t current, uint8_t next );
   static constexpr uint8_t calcCrc( uint8_t current, const uint8_t *next, size_t nextLen );
 
-  unsigned m_debugLevel = 1;
+  unsigned m_debugLevel = 9;
   Stream *m_serial = nullptr;
   size_t m_framePos = 0;
   uint8_t m_runningSum = 0;
