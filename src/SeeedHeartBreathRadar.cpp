@@ -35,7 +35,7 @@ void SeeedHeartBreathRadar::Wifi() {
   Serial.println(WiFi.localIP());
 }
 
-// Function to connect and reconnect as necessary to the MQTT server.
+// MQTT Discovery and state update messages, this will create a base device under MQTT Intergration with 1 sensor and 2 binary_sensors
 // Should be called in the loop function and it will take care if connecting.
 void SeeedHeartBreathRadar::MQTT() {
   if (mqttClient.connected()) {
