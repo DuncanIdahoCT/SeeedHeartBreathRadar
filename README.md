@@ -1,6 +1,6 @@
 # This Branch (seeed-mmwave-60ghz-homeassistant):
 
-Adds full Home Assistant device/sensor/binary_sensor functionality similar to another project where I used the Seeed Arduino example sketch and extended it to work as an MQTT Home Assistant integration.
+Is where I'm testing full Home Assistant device/sensor/binary_sensor functionality similar to another project where I used the Seeed Arduino example sketch and extended it to work as an MQTT Home Assistant integration.
 
 ## This Fork:
 
